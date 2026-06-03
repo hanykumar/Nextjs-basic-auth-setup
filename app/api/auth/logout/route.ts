@@ -1,0 +1,24 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { clearAuthCookie } from '@/lib/auth/session';
+
+export async function POST(request: NextRequest) {
+  try {
+    const response = NextResponse.json({ message: 'Logged out successfully' }, { status: 200 });
+
+    // Clear auth cookie
+    response.cookies.set({
+      name: 'hk_auth_token',
+      value: '',
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 0,
+      path: '/',
+    });
+
+    return response;
+  } catch (error) {
+    console.error('Logout error:', error);
+    return NextResponse.json({ error: 'Logout failed' }, { status: 500 });
+  }
+}
